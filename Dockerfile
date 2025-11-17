@@ -1,15 +1,13 @@
-# Dockerfile
-FROM eclipse-temurin:17-jre-jammy-slim
+# Étape 1 : Build avec Maven
+FROM maven:3.9.9-eclipse-temurin-17 AS builder
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Metadata (optionnel)
-LABEL maintainer="ton-nom <ton.email@example.com>"
-
-# Copy the jar produced by Maven into the image
-# Si ton jar est dans target/*.jar :
-COPY target/*.jar /app/app.jar
-
-# Expose port (optionnel)
+# Étape 2 : Image finale légère
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
 EXPOSE 8089
-
-# Run the jar
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
