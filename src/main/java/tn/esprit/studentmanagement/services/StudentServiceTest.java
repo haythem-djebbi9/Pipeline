@@ -15,11 +15,10 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class StudentServiceTest {
+class StudentServiceUnitTest {
 
     @Mock
     private StudentRepository studentRepository;
@@ -29,10 +28,10 @@ class StudentServiceTest {
 
     @Test
     void shouldReturnAllStudents() {
-        Student s1 = createStudent(1L, "Haythem");
-        Student s2 = createStudent(2L, "Ali");
-
-        when(studentRepository.findAll()).thenReturn(Arrays.asList(s1, s2));
+        when(studentRepository.findAll()).thenReturn(Arrays.asList(
+                createStudent(1L, "Haythem"),
+                createStudent(2L, "Ali")
+        ));
 
         List<Student> result = studentService.getAllStudents();
 
@@ -42,16 +41,16 @@ class StudentServiceTest {
 
     @Test
     void shouldFindStudentById() {
-        Student student = createStudent(1L, "Haythem");
-        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(createStudent(1L, "Haythem")));
 
         Student found = studentService.getStudentById(1L);
+
         assertThat(found.getFirstName()).isEqualTo("Haythem");
     }
 
     private Student createStudent(Long id, String firstName) {
         Student s = new Student();
-        s.setId(id);
+        s.setIdStudent(id);
         s.setFirstName(firstName);
         s.setLastName("Test");
         s.setEmail(firstName.toLowerCase() + "@test.com");
