@@ -29,4 +29,9 @@ public class Student {
 
     @OneToMany(mappedBy = "student")
     private List<Enrollment> enrollments;
+
+    public void setStatus(Status status) {
+
+
+    }
 }
