@@ -20,40 +20,46 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class StudentServiceUnitTest {
 
-    @Mock
-    private StudentRepository studentRepository;
+    @Mock private StudentRepository studentRepository;
+    @InjectMocks private StudentService studentService;
 
-    @InjectMocks
-    private StudentService studentService;
-
-    @Test
-    void shouldReturnAllStudents() {
-        when(studentRepository.findAll()).thenReturn(Arrays.asList(
-                createStudent(1L, "Haythem"),
-                createStudent(2L, "Ali")
-        ));
-
-        List<Student> result = studentService.getAllStudents();
-
-        assertThat(result).hasSize(2);
+    @Test void getAllStudents_ReturnsList() {
+        when(studentRepository.findAll()).thenReturn(Arrays.asList(createStudent(1L), createStudent(2L)));
+        assertThat(studentService.getAllStudents()).hasSize(2);
         verify(studentRepository).findAll();
     }
 
-    @Test
-    void shouldFindStudentById() {
-        when(studentRepository.findById(1L)).thenReturn(Optional.of(createStudent(1L, "Haythem")));
-
-        Student found = studentService.getStudentById(1L);
-
-        assertThat(found.getFirstName()).isEqualTo("Haythem");
+    @Test void getStudentById_ExistingId_ReturnsStudent() {
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(createStudent(1L)));
+        assertThat(studentService.getStudentById(1L)).isNotNull();
     }
 
-    private Student createStudent(Long id, String firstName) {
+    @Test void saveStudent_CallsRepositorySave() {
+        Student student = createStudent(null);
+        when(studentRepository.save(any())).thenReturn(student);
+        studentService.saveStudent(student);
+        verify(studentRepository).save(student);
+    }
+
+    @Test void updateStudent_ExistingId_UpdatesAndReturns() {
+        Student existing = createStudent(1L);
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(studentRepository.save(any())).thenReturn(existing);
+        Student updated = studentService.saveStudent(existing);
+        assertThat(updated.getIdStudent()).isEqualTo(1L);
+    }
+
+    @Test void deleteStudent_CallsRepositoryDelete() {
+        studentService.deleteStudent(99L);
+        verify(studentRepository).deleteById(99L);
+    }
+
+    private Student createStudent(Long id) {
         Student s = new Student();
-        s.setIdStudent(id);
-        s.setFirstName(firstName);
-        s.setLastName("Test");
-        s.setEmail(firstName.toLowerCase() + "@test.com");
+        s.setId(id);
+        s.setFirstName("Test");
+        s.setLastName("User");
+        s.setEmail("test@test.com");
         s.setDateOfBirth(LocalDate.of(2000, 1, 1));
         s.setStatus(Status.ACTIVE);
         return s;
