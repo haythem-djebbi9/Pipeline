@@ -56,7 +56,7 @@ class StudentServiceUnitTest {
 
     private Student createStudent(Long id) {
         Student s = new Student();
-        s.setId(id);
+        s.setIdStudent(id);
         s.setFirstName("Test");
         s.setLastName("User");
         s.setEmail("test@test.com");
