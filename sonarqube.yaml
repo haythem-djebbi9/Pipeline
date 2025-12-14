@@ -14,10 +14,10 @@ spec:
         app: sonarqube
     spec:
       containers:
-        - name: sonarqube
-          image: sonarqube:lts-community
-          ports:
-            - containerPort: 9000
+      - name: sonarqube
+        image: sonarqube:lts-community
+        ports:
+        - containerPort: 9000
 ---
 apiVersion: v1
 kind: Service
